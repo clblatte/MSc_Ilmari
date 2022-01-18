@@ -16,7 +16,7 @@ library(dplyr)
 
 
 # simulated data of whole FIN
-simulated <- read.csv(unz("U:/2_ForestValue/rslt_inoutmetsaan_RCP0_V13.zip", "rslt_inoutmetsaan_RCP0_V13.csv"), header = TRUE, sep =";")
+simulated <- read.csv(unz("U:/2_ForestValue/rslt_inoutmetsaan_RCP45_V13.zip", "rslt_inoutmetsaan_RCP45_V13.csv"), header = TRUE, sep =";")
 
 names(simulated)
 summary(simulated)
@@ -31,12 +31,12 @@ length(unique(sample$id)) # 3579 stands
 head(sample) 
 
 # write data to csv file - used for optimization later
-write.table(sample, paste0(path,"/scripts_cb/sample_central_fin.csv" ), sep = ";", row.names = F, col.names = TRUE)  
+write.table(sample, paste0(path,"/scripts_cb/sample_central_fin_rcp45.csv" ), sep = ";", row.names = F, col.names = TRUE)  
 
 
 
 # additional data including for example XY coordinates of stands (if used for plotting)
-simulated_xy <- read.csv(unz("U:/2_ForestValue/rslt_inoutmetsaan_RCP0_V13_XY.zip", "rslt_inoutmetsaan_RCP0_V13_XY.csv"), header = TRUE, sep =";")
+simulated_xy <- read.csv(unz("U:/2_ForestValue/rslt_inoutmetsaan_RCP45_V13_XY.zip", "rslt_inoutmetsaan_RCP45_V13_XY.csv"), header = TRUE, sep =";")
 
 head(simulated_xy) 
 
@@ -47,7 +47,7 @@ sample_xy <- simulated_xy %>% filter(region %in% 13)
 length(unique(sample_xy$id)) # 3579 stands
 
 # write data to csv file - used for optimization later
-write.table(sample_xy, paste0(path,"/scripts_cb/sample_central_fin_xy.csv" ), sep = ";", row.names = F, col.names = TRUE)  
+write.table(sample_xy, paste0(path,"/scripts_cb/sample_central_fin_rcp45_xy.csv" ), sep = ";", row.names = F, col.names = TRUE)  
 
 
 
