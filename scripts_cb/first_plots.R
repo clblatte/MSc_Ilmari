@@ -15,7 +15,7 @@ path <- getwd()
 
 
 # read data
-df <- read.csv(paste0(path, "/scripts_cb/sample_central_fin_rcp0.csv"), header = TRUE, sep= ";")
+df <- read.csv(paste0(path, "/scripts_cb/solutionAlldata_EUFS_rcp0_V2woF.csv"), header = TRUE, sep= ";")
 
 head(df)
 summary(df)
