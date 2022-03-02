@@ -43,6 +43,15 @@ df <- df.t %>%
 df[,c("id", "regime")]  %>%  distinct %>% count(regime)
 
 
+names(df)
+
+
+
+
+# -----------
+# NO climate change
+# -----------
+
 
 # -----------
 # reference scenario representing business as usual
@@ -74,7 +83,8 @@ df.sa <- df %>%
 length(unique(df.sa$id))
 
 # combine all of them to reference scenario BAU
-df.refbau <- rbind(df.bauwt, df.bau, df.sa)
+df.refbau_rcp0 <- rbind(df.bauwt, df.bau, df.sa) %>% 
+  mutate(policy = "refBAU")
 
 length(unique(df.refbau$id)) # should be 3579
 
@@ -84,9 +94,37 @@ length(unique(df.refbau$id)) # should be 3579
 # reference scenario for Set Aside
 # -----------
 
-df.refsa <- df %>%  filter(regime %in% "SA")
+df.refsa_rcp0 <- df %>%  filter(regime %in% "SA") %>% 
+  mutate(policy = "refSA")
 
 length(unique(df.refbau$id)) # should be 3579 
 # both data sets should have the same lenght (see right hand side - global env.)
+
+
+
+# -----------
+# reference scenario for CCF
+# -----------
+
+# ????
+
+
+
+# -----------
+# Climate change RCP4.5
+# -----------
+
+
+# same steps as above but with different input data
+
+
+
+# -----------
+# Combine all the reference scenarios under different climate trajectories
+# -----------
+
+
+df.refall <- rbind(df.refbau_rcp0, df.refsa_rcp0, ...)
+
 
 

@@ -51,3 +51,63 @@ write.table(sample_xy, paste0(path,"/scripts_cb/sample_central_fin_rcp45_xy.csv"
 
 
 
+
+
+################################################
+
+
+test_xy <- read.csv(paste0(path, "/scripts_cb/sample_central_fin_rcp0_xy.csv"), sep = ";"  ,header = TRUE, stringsAsFactors = TRUE)
+names(test_xy)
+
+
+test <- read.csv(paste0(path, "/scripts_cb/sample_central_fin_rcp0.csv"), sep = ";"  ,header = TRUE, stringsAsFactors = TRUE)
+names(test)
+
+testt <- test %>% select(id, year, regime, MAIN_SP, AGE_ba, protection) %>% 
+  filter(AGE_ba >= 90) %>% 
+  filter(regime %in% "SA") %>% 
+  filter(year %in% 2021) %>% 
+  filter(protection != "strict")
+
+length(unique(testt$id)) / length(unique(test$id)) * 100
+
+unique(test$regime)
+
+
+length(unique(test$id))
+
+regimes <- test[, c("regime","id")] %>% 
+  # get the number off stands per region
+  dplyr::distinct() %>% 
+  group_by(regime) %>% 
+  count(regime)  
+
+
+
+#####################################################
+
+
+# 5.5 % SA and 4.5% objective with old forest
+
+test1 <- read.csv(paste0(path, "/scripts_cb/solution_EUFS_rcp0_test1.csv"), sep = ","  ,header = TRUE, stringsAsFactors = TRUE)
+head(test1)
+test1 <- test1 %>% rename(no = X,
+                          id = X0,
+                          regime = X1,
+                          share = X2) %>% 
+  filter(regime %in% "SA")
+  
+
+# 10% SA and objective to max Age in SA, 20% protection + objective to max deadwood
+test2 <- read.csv(paste0(path, "/scripts_cb/solution_EUFS_rcp0_test2.csv"), sep = ","  ,header = TRUE, stringsAsFactors = TRUE)
+test2 <- test2 %>% rename(no = X,
+                          id = X0,
+                          regime = X1,
+                          share = X2) %>% 
+  filter(regime %in% "SA")
+
+joint <- test1 %>% left_join(test2, by =("id")) %>% 
+  filter(regime.y %in% NA)
+
+nrow(joint[joint$regime.y %in% NA,])
+
