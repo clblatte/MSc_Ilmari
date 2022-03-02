@@ -105,19 +105,27 @@ length(unique(df.refsa_rcp0$id)) # should be 3579
 # -----------
 
 # get list of stands under certain regime
-df.CCF_2_id <- unique(df[df$regime %in% "CCF_2",]$id)
+CCF_2_id <- unique(df[df$regime %in% "CCF_2",]$id)
 length(CCF_2_id)
 
-# filter stands that have not been simulated CCF_2 regime
-df.sa <- df %>%  
-  filter(regime %in% "SA") %>% 
-  filter(! id %in% CCF_2_id)
-length(unique(df.sa$id))
+# filter stands with CCF_2
+df.CCF_2 <- df %>%  
+  filter(regime %in% "CCF_2",
+         id %in% CCF_2_id)
+length(unique(df.CCF_2$id))
 
-# combine all of them to reference scenario BAU
-df.refCCF_2_rcp0 <- rbind(df.CCF_2_id, df.sa) %>% 
+# assign stands not filtered with CCF_2 to SA
+df.SA <- df %>%  
+  filter(regime %in% "SA",
+         ! id %in% CCF_2_id)
+length(unique(df.SA$id))
+
+
+# combine all of them to reference scenario CCF_2
+df.refCCF_2_rcp0 <- rbind(df.CCF_2, df.SA) %>% 
   mutate(policy = "refCCF_2")
-length(df.refCCF_2_rcp0)
+
+length(unique(df.refCCF_2_rcp0$id)) # should be 3579
 
 
 # -----------
