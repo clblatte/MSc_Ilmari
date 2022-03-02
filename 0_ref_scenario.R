@@ -86,9 +86,7 @@ length(unique(df.sa$id))
 df.refbau_rcp0 <- rbind(df.bauwt, df.bau, df.sa) %>% 
   mutate(policy = "refBAU")
 
-length(unique(df.refbau$id)) # should be 3579
-
-
+length(unique(df.refbau_rcp0$id)) # should be 3579
 
 # -----------
 # reference scenario for Set Aside
@@ -97,7 +95,7 @@ length(unique(df.refbau$id)) # should be 3579
 df.refsa_rcp0 <- df %>%  filter(regime %in% "SA") %>% 
   mutate(policy = "refSA")
 
-length(unique(df.refbau$id)) # should be 3579 
+length(unique(df.refsa_rcp0$id)) # should be 3579 
 # both data sets should have the same lenght (see right hand side - global env.)
 
 
@@ -106,8 +104,20 @@ length(unique(df.refbau$id)) # should be 3579
 # reference scenario for CCF
 # -----------
 
-# ????
+# get list of stands under certain regime
+df.CCF_2_id <- unique(df[df$regime %in% "CCF_2",]$id)
+length(CCF_2_id)
 
+# filter stands that have not been simulated CCF_2 regime
+df.sa <- df %>%  
+  filter(regime %in% "SA") %>% 
+  filter(! id %in% CCF_2_id)
+length(unique(df.sa$id))
+
+# combine all of them to reference scenario BAU
+df.refCCF_2_rcp0 <- rbind(df.CCF_2_id, df.sa) %>% 
+  mutate(policy = "refCCF_2")
+length(df.refCCF_2_rcp0)
 
 
 # -----------
