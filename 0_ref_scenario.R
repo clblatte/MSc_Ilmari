@@ -47,9 +47,8 @@ names(df)
 
 
 
-
 # -----------
-# NO climate change
+# NO climate change (RCP0)
 # -----------
 
 
@@ -133,9 +132,101 @@ length(unique(df.refCCF_2_rcp0$id)) # should be 3579
 # -----------
 
 
-# same steps as above but with different input data
+# -----------
+# Data - for reference scenario 
+# -----------
 
 
+# read the simulated data (input also for optimization)
+df.t <- read.csv(paste0(path, "/scripts_cb/sample_central_fin_rcp45.csv"), sep = ";"  ,header = TRUE, stringsAsFactors = TRUE)
+names(df.t)
+
+# filter the regimes used for ref scenario
+df <- df.t %>% 
+  filter(regime %in% "SA" | regime %in% "BAUwT" | regime %in% "BAU" | regime %in% "BAUwoT" | regime %in% "CCF_2") %>%
+  mutate(scenario = "RCP45") # indicate climate scenario, in case we will have more then current climate
+
+# how often is each regime simulated - note - regime set aside is the only one applied to all stands
+df[,c("id", "regime")]  %>%  distinct %>% count(regime)
+
+
+names(df)
+
+
+# -----------
+# reference scenario representing business as usual
+# -----------
+
+# first, use stands simulated by BAUwt; second, stands simulated with BAU; all remaining stands will be SA 
+
+# get list of stands under certain regime
+bauwt_id <- unique(df[df$regime %in% "BAUwT",]$id)
+bau_id <- unique(df[df$regime %in% "BAU",]$id)
+
+# filter stands with BAUwT
+df.bauwt <- df %>%  
+  filter(regime %in% "BAUwT",
+         id %in% bauwt_id)
+length(unique(df.bauwt$id))
+
+# filter stands with BAU that have not been simulated with BAUwt
+df.bau <- df %>%  
+  filter(regime %in% "BAU") %>% 
+  filter(! id %in% bauwt_id)
+length(unique(df.bau$id))
+
+# filter stands that have not been simulated with any BAU, BAUwt regime
+df.sa <- df %>%  
+  filter(regime %in% "SA") %>% 
+  filter(! id %in% bauwt_id,
+         ! id %in% bau_id)
+length(unique(df.sa$id))
+
+# combine all of them to reference scenario BAU
+df.refbau_rcp45 <- rbind(df.bauwt, df.bau, df.sa) %>% 
+  mutate(policy = "refBAU")
+
+length(unique(df.refbau_rcp45$id)) # should be 3579
+
+
+# -----------
+# reference scenario for Set Aside
+# -----------
+
+df.refsa_rcp45 <- df %>%  filter(regime %in% "SA") %>% 
+  mutate(policy = "refSA")
+
+length(unique(df.refsa_rcp0$id)) # should be 3579 
+# both data sets should have the same lenght (see right hand side - global env.)
+
+
+
+# -----------
+# reference scenario for CCF
+# -----------
+
+# get list of stands under certain regime
+CCF_2_id <- unique(df[df$regime %in% "CCF_2",]$id)
+length(CCF_2_id)
+
+# filter stands with CCF_2
+df.CCF_2 <- df %>%  
+  filter(regime %in% "CCF_2",
+         id %in% CCF_2_id)
+length(unique(df.CCF_2$id))
+
+# assign stands not filtered with CCF_2 to SA
+df.SA <- df %>%  
+  filter(regime %in% "SA",
+         ! id %in% CCF_2_id)
+length(unique(df.SA$id))
+
+
+# combine all of them to reference scenario CCF_2
+df.refCCF_2_rcp45 <- rbind(df.CCF_2, df.SA) %>% 
+  mutate(policy = "refCCF_2")
+
+length(unique(df.refCCF_2_rcp45$id)) # should be 3579
 
 # -----------
 # Combine all the reference scenarios under different climate trajectories
