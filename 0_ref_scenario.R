@@ -246,29 +246,38 @@ df.refall_rcp45 <- rbind(df.refbau_rcp45, df.refsa_rcp45, df.refCCF_2_rcp45)
 
 library(ggplot2)
 
+# arbitrary start and end dates for comparrison
 df.filteredforplot <- df.refall %>%  
   filter(year %in% c("2021", "2111"))
 
+#
+# Have I done something wrong here or when making the CCF_2 ref scenario?
+#
+
+# change in management regimes
+df.filteredforplot %>%
+  ggplot(aes(x=scenario, y= scenario, fill=factor(regime)))+
+  geom_bar(stat="identity")+
+  labs(fill="Year")+
+  facet_wrap(~ policy)
+
+# change of increment
 df.filteredforplot %>%
   ggplot(aes(x=regime, y=V, fill=factor(year)))+
   geom_boxplot()+
   labs(fill="Year")+
   facet_wrap(~ scenario)
 
+# change of carbon sink
 df.filteredforplot %>%
   ggplot(aes(x=regime, y=CARBON_SINK, fill=factor(year)))+
   geom_boxplot()+
   labs(fill="Year")+
   facet_wrap(~ scenario)
 
+#change in deadwood volume
 df.filteredforplot %>%
   ggplot(aes(x=regime, y=V_total_deadwood, fill=factor(year)))+
   geom_boxplot()+
   labs(fill="Year")+
   facet_wrap(~ scenario)
-
-df.filteredforplot %>%
-  ggplot(aes(x=regime, y=Scenic, fill=factor(year)))+
-        geom_boxplot()+
-        labs(fill="Year")+
-        facet_wrap(~ scenario)
