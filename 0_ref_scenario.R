@@ -188,7 +188,6 @@ df.refbau_rcp45 <- rbind(df.bauwt, df.bau, df.sa) %>%
 
 length(unique(df.refbau_rcp45$id)) # should be 3579
 
-
 # -----------
 # reference scenario for Set Aside
 # -----------
@@ -221,19 +220,55 @@ df.SA <- df %>%
          ! id %in% CCF_2_id)
 length(unique(df.SA$id))
 
-
 # combine all of them to reference scenario CCF_2
 df.refCCF_2_rcp45 <- rbind(df.CCF_2, df.SA) %>% 
   mutate(policy = "refCCF_2")
 
 length(unique(df.refCCF_2_rcp45$id)) # should be 3579
 
+
+
 # -----------
 # Combine all the reference scenarios under different climate trajectories
 # -----------
 
+df.refall <- rbind(df.refbau_rcp0, df.refsa_rcp0, df.refCCF_2_rcp0, df.refbau_rcp45, df.refsa_rcp45, df.refCCF_2_rcp45)
 
-df.refall <- rbind(df.refbau_rcp0, df.refsa_rcp0, ...)
+df.refall_rcp0 <- rbind(df.refbau_rcp0, df.refsa_rcp0, df.refCCF_2_rcp0)
+
+df.refall_rcp45 <- rbind(df.refbau_rcp45, df.refsa_rcp45, df.refCCF_2_rcp45)
 
 
 
+# -----------
+# Initial graphs of the data
+# -----------
+
+library(ggplot2)
+
+df.filteredforplot <- df.refall %>%  
+  filter(year %in% c("2021", "2111"))
+
+df.filteredforplot %>%
+  ggplot(aes(x=regime, y=V, fill=factor(year)))+
+  geom_boxplot()+
+  labs(fill="Year")+
+  facet_wrap(~ scenario)
+
+df.filteredforplot %>%
+  ggplot(aes(x=regime, y=CARBON_SINK, fill=factor(year)))+
+  geom_boxplot()+
+  labs(fill="Year")+
+  facet_wrap(~ scenario)
+
+df.filteredforplot %>%
+  ggplot(aes(x=regime, y=V_total_deadwood, fill=factor(year)))+
+  geom_boxplot()+
+  labs(fill="Year")+
+  facet_wrap(~ scenario)
+
+df.filteredforplot %>%
+  ggplot(aes(x=regime, y=Scenic, fill=factor(year)))+
+        geom_boxplot()+
+        labs(fill="Year")+
+        facet_wrap(~ scenario)
