@@ -46,9 +46,11 @@ plot.regime <- single_regime_prc %>%
   ylab("regime share [%]") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
         axis.title.x=element_blank()) +
-  scale_y_continuous(limits=c(0, 45)) +
   facet_wrap(. ~ scenario)
 plot.regime
+
+# you can also save the outputs to include them later in your thesis
+ggsave(plot = plot.regime, paste0(path,"/outp/plot.regime.tiff"), width=6, height=4) # you can specify the size of plot that it looks nice
 
 
 # plot the single regimes - on top
@@ -62,7 +64,6 @@ plot.regime_stack <- single_regime_prc %>%
         axis.title.x=element_blank(),
         legend.title = element_blank()) 
 plot.regime_stack
-
 
 
 
@@ -93,4 +94,5 @@ plot.regime_6class_stack <- regime_6class_prc %>%
         axis.title.x=element_blank(),
         legend.title = element_blank()) 
 plot.regime_6class_stack
+
 
