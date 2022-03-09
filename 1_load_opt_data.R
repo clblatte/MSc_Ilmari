@@ -75,11 +75,7 @@ head(df.solution)
 rm(df.solution.t) 
 rm(solution, solution_names)
   
-  write.table(df.solution,
-              paste0(outp_optdata,"df_solution.csv" ), 
-              sep = ";", 
-              row.names = F, 
-              col.names = TRUE) 
+
 
   
   
@@ -168,9 +164,6 @@ df.solution_alldata <- df.solution_alldata %>%
   left_join(solution_area_share, by = c("id", "regime", "policy", "scenario"))
 
 rm(solution_area_share)
-
-
-
 
 
 
