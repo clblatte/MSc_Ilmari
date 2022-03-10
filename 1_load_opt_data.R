@@ -1,7 +1,7 @@
 #####
 #
 # Load and format the data coming from the optimization tool
-# (solution_..., solutionAlldata)
+# (solution_..., solutionAlldata on the virtual machine)
 # 
 # 2022-01-31
 #
@@ -46,7 +46,7 @@ df.solution.t <- NULL
 for(name in solution_names) {
   
   # read each solution_ file
-  df <- read.csv(paste0(path, "/opt_data/", name, ".csv"), sep = ","  ,header = TRUE, stringsAsFactors = TRUE)
+  df <- read.csv(paste0(path, "/opt_data/", name, ".csv"), sep = ","  ,header = TRUE)
   
   # add a new column that contains the name of the file
   df$name <- name 
@@ -67,7 +67,8 @@ df.solution <- df.solution.t %>%
   rename(NoStands = X, # consecutive number given by opt tool
          id = X0, # unique stand ID, 
          regime = X1, # optimal management regime for each stand
-         stand_share = X2) # stand share the optimal regime is allocated, genereally = 1, but can also be allocated to two/three regimes, needs to be considered!
+         stand_share = X2)  # stand share the optimal regime is allocated, genereally = 1, but can also be allocated to two/three regimes, needs to be considered!
+  
 
 head(df.solution)
 
@@ -91,7 +92,7 @@ df.solution_alldata.t <- NULL
   
 for(name in solution_alldata_names) {
   
-  df <- read.csv(paste0(path, "/opt_data/", name, ".csv"), sep = ","  ,header = TRUE, stringsAsFactors = TRUE)
+  df <- read.csv(paste0(path, "/opt_data/", name, ".csv"), sep = ","  , header = TRUE)
     
   df$name <- name 
     
@@ -166,6 +167,11 @@ df.solution_alldata <- df.solution_alldata %>%
 rm(solution_area_share)
 
 
+# --------------------
+# Remove some unused columns
+# --------------------
+
+df.solution <- df.solution %>%  select(-NoStands)
 
 
 
