@@ -117,7 +117,7 @@ plot.regime_class
 # now we can also save it
 ggsave(plot = plot.regime_class, paste0(path,"/outp/plot.regime_class.tiff"), width=4, height=4)
 
-# The current color scheems are bit strong... but there are also other colour sheems.
+# The current color schemes are bit strong... but there are also other colour schemes.
 # If you google for "ggplot adjust color" you can find for example ways how to adapt it; 
 
 
@@ -128,7 +128,7 @@ ggsave(plot = plot.regime_class, paste0(path,"/outp/plot.regime_class.tiff"), wi
 
 # Lets get a stacked management plot, where the four scenarios are next to each other
 
-# There for the two data frames df.solution and df.refall need to be combinde (rbind)
+# There for the two data frames df.solution and df.refall need to be combine (rbind)
 # But this requires that they have the same columns with identical names
 
 names(df.solution)
@@ -141,22 +141,38 @@ unique(df.refall$scenario)
 # from df.refall we also want to keep only one year, since the management is constant over time
 # df.all_scenario <- df.refall %>%  select() %>% filter(year ...)
 
+df.all_scenario <- df.refall %>% select(id, year, regime, policy, scenario, regime, represented_area_by_NFIplot)
+df.all_scenario <- filter(df.all_scenario, year == "2021")
+
+
 # 2) create a column called "stand_share", using "mutate" and give it the value of 1 since under the reference stands are fully managed by one regime
-# create a column calles solution area share, with "mutate", see e.g. under script 1-load_opt_data.R around line 149
-# column year can now alos be ignored since this is not in df.solution
+
+df.all_scenario <- mutate(df.all_scenario, stand_share = 1)
+
+
+# create a column called solution area share, with "mutate", see e.g. under script 1-load_opt_data.R around line 149
+
+df.all_scenario <- mutate(df.all_scenario, solution_area_share = round(stand_share * represented_area_by_NFIplot, digits=0))
+
+
+# column year can now also be ignored since this is not in df.solution
+
+df.all_scenario <- select(df.all_scenario,-c(year))
+
+
+# relocating column before rbind
+
+df.all_scenario <- df.all_scenario %>%
+  relocate(stand_share, .after = regime) %>%
+  mutate(regime_6class = regime)%>%
+  relocate(regime_6class, .after = scenario) %>%
+  mutate(regime_class = regime)%>%
+  relocate(regime_class, .after = regime_6class)
+
 
 # when you are having the same columns in both sets you can combine them with rbind
 
+df.all_scenario <- rbind(df.all_scenario, df.solution)
+
+
 # Afterwards you calculate also the percentage shares and plot them, e.g. like above form line 105 onward with the stacked version. 
-
-
-
-
-
-
-
-
-
-
-
-

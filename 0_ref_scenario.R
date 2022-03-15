@@ -42,7 +42,7 @@ df.refall.t <- NULL
 for(i in rcplist){
   
   # # to test the code within the loop the below line can be un-comment (means remove #)
-  # i = rcplist[2]
+  i = rcplist[2]
   
   # read the simulated data (input also for optimization)
   df <- read.csv(paste0(path, "/scripts_cb/sample_central_fin_", i, ".csv"), sep = ";"  ,header = TRUE)
