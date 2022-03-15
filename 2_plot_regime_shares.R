@@ -175,4 +175,31 @@ df.all_scenario <- df.all_scenario %>%
 df.all_scenario <- rbind(df.all_scenario, df.solution)
 
 
-# Afterwards you calculate also the percentage shares and plot them, e.g. like above form line 105 onward with the stacked version. 
+# Afterwards you calculate also the percentage shares and plot them, e.g. like above form line 93 onward with the stacked version. 
+
+
+# calculation of percent shares
+regime_class_prc <- df.all_scenario %>% 
+  # percentage share for each regime, but now for the classes! 
+  group_by(scenario, policy, regime_class) %>% 
+  # area share by regime
+  summarise( tot_area = sum(solution_area_share)) %>% 
+  # add total area
+  mutate(sum_tot_area = sum(tot_area)) %>% 
+  # calculate prc share
+  mutate(prc_share = round((tot_area / sum_tot_area)*100, digits = 2)) 
+
+# plot of regime class
+plot.regime_class_all_scenario <- regime_class_prc %>% 
+  ggplot(aes(x=scenario, y=prc_share) ) +
+  geom_bar(aes(fill=regime_class), position="stack", stat="identity" ) +
+  theme_minimal() +
+  facet_grid(. ~ policy) +
+  ylab("share of regime class [%]") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
+        axis.title.x=element_blank(),
+        legend.title = element_blank()) 
+plot.regime_class_all_scenario
+
+# save the plot
+ggsave(plot = plot.regime_class_all_scenario, paste0(path,"/outp/plot.regime_class_all_scenario.tiff"), width=4, height=4)
