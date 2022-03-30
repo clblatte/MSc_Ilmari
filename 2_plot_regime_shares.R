@@ -62,7 +62,7 @@ plot.regime
 # you can also save the outputs to include them later in your thesis
 # using ggsave and save it under folder "outp" and call it "plot.regime.tiff"
 # when you open this folder you will see the tiff file
-ggsave(plot = plot.regime, paste0(path,"/outp/plot.regime.tiff"), width=6, height=4) # wuith width and height you can specify the size of plot that it looks nice
+#ggsave(plot = plot.regime, paste0(path,"/outp/plot.regime.tiff"), width=6, height=4) # wuith width and height you can specify the size of plot that it looks nice
 
 
 # plot the single regimes - on top of each other, called stack
@@ -115,7 +115,7 @@ plot.regime_class <- regime_class_prc %>%
 plot.regime_class
 
 # now we can also save it
-ggsave(plot = plot.regime_class, paste0(path,"/outp/plot.regime_class.tiff"), width=4, height=4)
+#ggsave(plot = plot.regime_class, paste0(path,"/outp/plot.regime_class.tiff"), width=4, height=4)
 
 # The current color schemes are bit strong... but there are also other colour schemes.
 # If you google for "ggplot adjust color" you can find for example ways how to adapt it; 
@@ -132,16 +132,16 @@ ggsave(plot = plot.regime_class, paste0(path,"/outp/plot.regime_class.tiff"), wi
 # But this requires that they have the same columns with identical names
 
 names(df.solution)
-names(df.refall)
+names(df.solution_alldata)
 
 unique(df.solution$scenario)
-unique(df.refall$scenario)
+unique(df.solution_alldata$scenario)
 
 # 1) take from df.refall only the columns that we need (id, year, regime, policy, scenario, represented_area_by_NFIplot, and so on), works with "select"
 # from df.refall we also want to keep only one year, since the management is constant over time
 # df.all_scenario <- df.refall %>%  select() %>% filter(year ...)
 
-df.all_scenario <- df.refall %>% select(id, year, regime, policy, scenario, regime, represented_area_by_NFIplot)
+df.all_scenario <- df.solution_alldata %>% select(id, year, regime, policy, scenario, regime, represented_area_by_NFIplot)
 df.all_scenario <- filter(df.all_scenario, year == "2021")
 
 
@@ -202,4 +202,4 @@ plot.regime_class_all_scenario <- regime_class_prc %>%
 plot.regime_class_all_scenario
 
 # save the plot
-ggsave(plot = plot.regime_class_all_scenario, paste0(path,"/outp/plot.regime_class_all_scenario.tiff"), width=4, height=4)
+#ggsave(plot = plot.regime_class_all_scenario, paste0(path,"/outp/plot.regime_class_all_scenario.tiff"), width=4, height=4)
