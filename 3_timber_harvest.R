@@ -20,23 +20,7 @@ library(tidyr)
 # on x axis we want to have the year and on y axis the total harvest
 
 
-# But therefor first the "df.refall" and the "df.solution_alldata" need to be combined
-# This requires again that they are having the same columns!! But this time we are additionally interested in the columns:
-# "Harvested_V" and e.g.  "Harvested_V_log_under_bark"  "Harvested_V_pulp_under_bark"
-
-names(df.solution_alldata)
-names(df.refall)
-
-df.refall <- df.refall%>%
-  mutate(df.refall, stand_share = 1)%>%
-  mutate(df.refall, solution_area_share = round(stand_share * represented_area_by_NFIplot, digits=0))%>%
-  relocate(scenario, .after = policy)%>%
-  rename(V_deadwood = V_total_deadwood)
-
-df.temp <- select(df.solution_alldata, -c(Old_forests, regime_6class, regime_class))
-
-df.harvest <- rbind(df.refall, df.temp)
-
+df.harvest <- select(df.solution_alldata, -c(Old_forests, regime_6class, regime_class))
 
 
 # To have a line plot over time we need to aggregate our data first a bit, coming form stand values over time to landscape values (total values) over time.
@@ -52,22 +36,97 @@ df.harvest <- df.harvest %>%
   summarise(sum_tot_harveset = sum(tot_harvest)) %>% 
   arrange(scenario, year)
 
-# This aggregated values can the be plotted using ggplot and geom_line
-# I guess you will figure out how to do it :-)
+
+#
+# Same for pulp and roundwood
+#
+
+df.pulp_log <- df.solution_alldata
+
+df.pulp_log <- df.pulp_log %>%
+  mutate(tot_pulp_harvest = solution_area_share * Harvested_V_pulp_under_bark) %>%
+  mutate(tot_log_harvest = solution_area_share * Harvested_V_log_under_bark) %>%
+  group_by(year, scenario, policy) %>%
+  arrange(scenario, year)
+
+df.pulp_log <- df.pulp_log %>%
+  summarise((sum_tot_pulp = sum(tot_pulp_harvest)), (sum_tot_log = sum(tot_log_harvest)))
+
+df.pulp_log <- df.pulp_log %>%
+  rename(Total_pulp = 4) %>%
+  rename(Total_log = 5)
 
 
 #
-#
-# Have I done something wrong in the previous phase to make the EUSF scenario look like it does on the plot (straight horizontal line), and I can't figure out why the rcp0 scenario lines are not showing (are the values too close to gether in the refBAU and refCCF_2 scenarios that they look like one line in the plot?)
-#
+# Plot of timber harvests
 #
 
 plot_timber_harvest <- df.harvest %>%
   ggplot(aes(x=year, y=sum_tot_harveset, group=scenario))+
   geom_line(aes(color = scenario))+
-  geom_point()+
+  labs(title="Volume of timber harvests",x="Year", y = "million m3")+
+  theme(axis.text.x = element_text(angle = 90))+
+  scale_y_continuous(labels=function(x)x/1000000)+
   facet_grid(. ~ policy)
 
 plot_timber_harvest
+#ggsave(plot = plot_timber_harvest, paste0(path,"/outp/plot_timber_harvest_V?.tiff"), width=10, height=10)
 
-ggsave(plot = plot_timber_harvest, paste0(path,"/outp/plot_timber_harvest.tiff"), width=4, height=4)
+
+#
+# Plot of pulp and log harvests
+#
+
+plot_pulp_log_harvest <- df.pulp_log %>%
+  ggplot(aes(x=year, group=scenario))+
+  geom_line(aes(y = Total_pulp, color = scenario))+
+  geom_line(aes(y = Total_log, color = scenario))+
+  labs(title="Volume of pulp and log harvests",x="Year", y = "million m3")+
+  theme(axis.text.x = element_text(angle = 90))+
+  scale_y_continuous(labels=function(x)x/1000000)+
+  facet_grid(. ~ policy)
+
+plot_pulp_log_harvest
+#ggsave(plot = plot_pulp_log_harvest, paste0(path,"/outp/plot__plot_and_log_V3.tiff"), width=10, height=10)
+
+
+
+
+
+
+
+###############################################################################
+# Backup
+#
+#df.pulp <- df.pulp_log %>%
+#  summarise(sum_tot_pulp = sum(tot_pulp_harvest), )
+#
+#df.log <- df.pulp_log %>%
+#  summarise(sum_tot_log = sum(tot_log_harvest))
+#
+# Plot of pulp harvests
+#
+#plot_pulp_harvest <- df.pulp %>%
+#  ggplot(aes(x=year, y=sum_tot_pulp, group=scenario))+
+#  geom_line(aes(color = scenario))+
+#  labs(title="Volume of harvested pulp under bark",x="Year", y = "million 3")+
+#  theme(axis.text.x = element_text(angle = 90))+
+#  scale_y_continuous(labels=function(x)x/1000000)+
+#  facet_grid(. ~ policy)
+#
+#plot_pulp_harvest
+#ggsave(plot = plot_pulp_harvest, paste0(path,"/outp/plot_pulp_harvest_V2.tiff"), width=10, height=10)
+#
+# Plot of roundwood harvests
+#
+#
+#plot_log_harvest <- df.log %>%
+#  ggplot(aes(x=year, y=sum_tot_log, group=scenario))+
+#  geom_line(aes(color = scenario))+
+#  labs(title="Volume of harvested log under bark",x="Year", y = "milion m3")+
+#  theme(axis.text.x = element_text(angle = 90))+
+#  scale_y_continuous(labels=function(x)x/1000000)+
+#  facet_grid(. ~ policy)#
+
+#plot_log_harvest
+#ggsave(plot = plot_log_harvest, paste0(path,"/outp/plot_log_harvest_V2.tiff"), width=10, height=10)
