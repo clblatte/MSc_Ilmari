@@ -31,6 +31,12 @@ library(tidyr)
 # But of course google is also all the time a good help, but the sheets can give an idea what to look for
 
 
+### adjust factor level to order regimes for plotting
+unique(df.solution$regime_class)
+df.solution$regime_class <- factor(df.solution$regime_class, 
+                                   levels = c("BAU_m20", "BAU_F", "BAU_m5", 
+                                              "BAU", "BAU_5", "BAU_15", "BAU_30", "BAU_B", "CCF_1&2", "BAU_GTR", "CCF_3&4", "SA"))
+
 # calculate the percentage share for each regime and ...
 single_regime_prc <- df.solution %>% 
   # group by scenario, policy, and regime ...
@@ -125,6 +131,14 @@ plot.regime_class
 #########################################################################################################
 # NEXT step: Plot policy scenario together reference scenarios (df.refall)
 #########################################################################################################
+
+#
+# Since we are not using the ref scenarios from df.refall
+# THe whole part below can actually be ignored / deleted :-)
+# You can also keep it for now an just comment it out with #
+#
+
+
 
 # Lets get a stacked management plot, where the four scenarios are next to each other
 

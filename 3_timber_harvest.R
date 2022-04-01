@@ -47,18 +47,32 @@ df.pulp_log <- df.pulp_log %>%
   mutate(tot_pulp_harvest = solution_area_share * Harvested_V_pulp_under_bark) %>%
   mutate(tot_log_harvest = solution_area_share * Harvested_V_log_under_bark) %>%
   group_by(year, scenario, policy) %>%
+  # CB: include summarise here... no need to calculate them seperately (you could even include the harvest aggregation here ... what you have done above)
+  summarise(Total_pulp = sum(tot_pulp_harvest),
+            Total_log = sum(tot_log_harvest)) %>% 
   arrange(scenario, year)
 
-df.pulp_log <- df.pulp_log %>%
-  summarise((sum_tot_pulp = sum(tot_pulp_harvest)), (sum_tot_log = sum(tot_log_harvest)))
+head(df.pulp_log)
 
-df.pulp_log <- df.pulp_log %>%
-  rename(Total_pulp = 4) %>%
-  rename(Total_log = 5)
+# #
+# # CB: you need to include the below summarise function directly above... see how I have included it there
+# #     and separate for pulp and log, then you need not to rename the columns either...
+# #
+# df.pulp_log <- df.pulp_log %>%
+#   summarise((sum_tot_pulp = sum(tot_pulp_harvest)), (sum_tot_log = sum(tot_log_harvest)))
+# 
+# df.pulp_log <- df.pulp_log %>%
+#   rename(Total_pulp = 4) %>%
+#   rename(Total_log = 5)
 
 
 #
 # Plot of timber harvests
+#
+
+
+#
+# CB: see parallel the plot example in folder cb/plot_harvest_cb.R
 #
 
 plot_timber_harvest <- df.harvest %>%
@@ -77,8 +91,12 @@ plot_timber_harvest
 # Plot of pulp and log harvests
 #
 
+#
+# CB: this is probably not a good way of plotting it - main reason, you do not have the info in the plot what is pulp and log...
+#
 plot_pulp_log_harvest <- df.pulp_log %>%
   ggplot(aes(x=year, group=scenario))+
+  # CB: in this way it 
   geom_line(aes(y = Total_pulp, color = scenario))+
   geom_line(aes(y = Total_log, color = scenario))+
   labs(title="Volume of pulp and log harvests",x="Year", y = "million m3")+
@@ -89,6 +107,40 @@ plot_pulp_log_harvest <- df.pulp_log %>%
 plot_pulp_log_harvest
 #ggsave(plot = plot_pulp_log_harvest, paste0(path,"/outp/plot__plot_and_log_V3.tiff"), width=10, height=10)
 
+
+#
+# CB: being able to plot this in way that its around, we might need to re-arrange the data bit...
+#
+head(df.pulp_log)
+
+df.pulp_log  <- df.pulp_log %>% 
+  # This makes the two columns total_pulp & total_log from "wide" to "long" format 
+  # with new column specifying the assortment and its value
+  tidyr::gather(assortment, value, 4:5) 
+
+# this can now be plotted keeping the info about pulp and log - similar to the harvest example under "plot_harvest_cb.R"
+df.pulp_log %>% 
+  ggplot(aes(year, value)) +
+  geom_line( aes(color = assortment, linetype = scenario)) +
+  facet_wrap(.~ policy) 
+# then you can add hear further specifications to modify the plot: color, axis labes, background, and so on... there are many examples if you google
+
+
+#
+# CB: to have an more easier comparison, we could also look only at the timely mean values and 
+#
+head(df.pulp_log )
+
+df.pulp_log %>% 
+  group_by(scenario, policy, assortment) %>% 
+  summarise(timely_mean = mean(value),
+            # those - either the sd, or the min/max could be use for error bars in bar plot
+            sd = sd(value),
+            min = min(value),
+            max = max(value))
+
+# Those you could then also plot as bar plot with error bars ... 
+# see example here http://www.sthda.com/english/wiki/ggplot2-error-bars-quick-start-guide-r-software-and-data-visualization
 
 
 
