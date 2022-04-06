@@ -7,8 +7,8 @@
 #####
 
 
-# Calculate indicator values of scenarios over time (average)
-# Normalize optimum values in relation to min/max of objective ranges
+# Calculate indicator values of scenarios over time (average over landscape, XX/ha)
+# Normalize the values in relation to min/max observed in data; over all scenarios, years, and CC trajectories
 
 
 
@@ -29,14 +29,14 @@ path <- getwd()
 
 
 # ----------
-# get yearly landscape values for indicators: here as SUM - for MSc we might use the mean
+# get yearly landscape values for indicators: here as sum() - for MSc we might use the mean()
 # ----------
 
-# all inidcators eccept the ones addrassing a regime share (SA, CCF_3, CCF_4, and "BAUwGTR", "BAUwT_GTR") - this is coming below.
+# all indicators except the ones addressing a regime share (SA, CCF_3, CCF_4, and "BAUwGTR", "BAUwT_GTR") - this is coming below.
 # use all indicators that we have used in the optimization for the EU strategy: see https://github.com/clblatte/MSc_IlmariOpt/blob/master/MSc_ForestStrategy.ipynb 
 
 
-# Indicators addressed in Mf optimization (any further? check with optimization notebook)
+# Indicators addressed in policy optimization (any further? check with optimization notebook, see link above)
 # 
 ind <- c("Harvested_V", "Biomass", "HSI_MOOSE", "HAZEL_GROUSE", 
          "CAPERCAILLIE", "V_deadwood", "prc_V_deciduous", "N_where_D_gt_40", "CARBON_SINK", "Recreation", "Scenic", 
@@ -44,7 +44,7 @@ ind <- c("Harvested_V", "Biomass", "HSI_MOOSE", "HAZEL_GROUSE",
 
 ind_timely_values <- df.solution_alldata[] %>%
   
-  # here the area weighted sum over each year was calculated, we might take the "mean" instead
+  # here the area weighted sum() over each year was calculated, we might take the "mean()" instead
   group_by(year, policy, scenario) %>%
   summarise(sum_Harvested_V = sum(Harvested_V * represented_area_by_NFIplot * stand_share),
             Sum_Biomass = sum(Biomass * represented_area_by_NFIplot * stand_share),
@@ -62,7 +62,7 @@ ind_timely_values <- df.solution_alldata[] %>%
             Sum_Scenic = sum(Scenic * represented_area_by_NFIplot * stand_share))
 
 # make df format from wide to long
-# The new column is here calles "objective", could also be called "indicator"
+# The new column is here called "objective", could also be called "indicator" --> think of to adjust this also below
 ind_timely_values <- ind_timely_values  %>% tidyr::gather("objective", "value", 4:length(ind_timely_values))
 
 
@@ -71,7 +71,7 @@ ind_timely_values <- ind_timely_values  %>% tidyr::gather("objective", "value", 
 # Get optimal solution for indicators measuring an regime (SA, or CCF_3, CCF_4, and "BAUwGTR", "BAUwT_GTR") share of management regimes for the protection target
 # -----------
 
-# similar it can be done for SA
+# similar it can be done for regime SA
 
 REGIMES = c("CCF_3", "CCF_4", "BAUwGTR", "BAUwT_GTR")
   
@@ -109,16 +109,14 @@ df.regimeInd <- df.solution_alldata %>%
 
 
    
-
-
 # ----------
-# group objective by ecosystem services - GROUP IT HERE ACCORDING YOUR POLICY TABLE !!
+# group objective by ecosystem services - GROUP IT HERE ACCORDING YOUR POLICY TABLE, which indicators have been used to address the FES !!
 # ----------
 
 # add column indicating the ES
 ind_timely_values <- ind_timely_values %>% 
   mutate(es = case_when(
-    objective %in% c("Sum_i_Vm3" , "Sum_Harvested_V")  ~ "Wood",
+    objective %in% c("Sum_Harvested_V")  ~ "Wood",
     objective %in% c("Sum_Biomass")  ~ "Bioenergy",
     objective %in% c("Sum_BILBERRY","Sum_COWBERRY", "Sum_ALL_MARKETED_MUSHROOMS" )  ~ "Nonwood",
     objective %in% c("Sum_HSI_MOOSE", "Sum_HAZEL_GROUSE", "Sum_CAPERCAILLIE")  ~ "Game",
@@ -126,9 +124,10 @@ ind_timely_values <- ind_timely_values %>%
     
     objective %in% c("Sum_CARBON_SINK")  ~ "Climate",
     
-    objective %in% c("Sum_Recreation", "Sum_Scenic")  ~ "Recreation",
-    objective %in% c("Ratio_ACC_forests") ~ "Resilience",
-    objective %in% c("Ratio_CCF_onPeat") ~ "Water")) 
+    objective %in% c("Sum_Recreation", "Sum_Scenic")  ~ "Recreation" #,
+    #objective %in% c("Ratio_ACC_forests") ~ "Resilience",
+    #objective %in% c("Ratio_CCF_onPeat") ~ "Water"
+    )) 
 
 
 
