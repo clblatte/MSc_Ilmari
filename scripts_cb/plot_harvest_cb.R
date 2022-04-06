@@ -15,6 +15,7 @@ library(tidyr)
 head(df.solution_alldata)
 
 
+
 plot <- df.solution_alldata %>%
   group_by(policy, scenario ,year) %>%
   
@@ -35,7 +36,9 @@ plot <- df.solution_alldata %>%
   scale_linetype_manual(values=c("solid","dashed"))+
   #scale_color_brewer(palette="Dark2") +
   scale_x_continuous(breaks=c(seq(2016,2116, by = 10) ))  +
-  expand_limits(x = c(2016, 2116)) +
+  expand_limits(x = c(2016, 2116),
+                #y = c(0,8)
+                ) +
   ylab(expression(Mm^{3}~year^{-1})) +
   labs("total harvest")
 plot
