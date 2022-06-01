@@ -173,5 +173,16 @@ rm(solution_area_share)
 
 df.solution <- df.solution %>%  select(-NoStands)
 
+# ----------
+# Merge SA reference scenario to solution data
+# ----------
+
+names(df.solution_alldata)
+names(df.refSA)
+
+
+
+
+df.solution_alldata <- rbind(df.solution_alldata, df.refSA)
 
 

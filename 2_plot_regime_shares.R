@@ -10,7 +10,7 @@
 library(dplyr)
 library(ggplot2)
 library(tidyr)
-
+library(RColorBrewer)
 
 
 
@@ -64,11 +64,12 @@ plot.regime <- single_regime_prc %>%
         axis.title.x=element_blank()) +
   facet_wrap(. ~ scenario)
 plot.regime
+#ggsave(plot = plot.regime, paste0(path,"/outp/plot.regime.tiff"), width=10, height=6) 
 
 # you can also save the outputs to include them later in your thesis
 # using ggsave and save it under folder "outp" and call it "plot.regime.tiff"
 # when you open this folder you will see the tiff file
-#ggsave(plot = plot.regime, paste0(path,"/outp/plot.regime.tiff"), width=6, height=4) # wuith width and height you can specify the size of plot that it looks nice
+#ggsave(plot = plot.regime, paste0(path,"/outp/plot.regime.tiff"), width=10, height=10) # wuith width and height you can specify the size of plot that it looks nice
 
 
 # plot the single regimes - on top of each other, called stack
@@ -83,8 +84,7 @@ plot.regime_stack <- single_regime_prc %>%
         axis.title.x=element_blank(),
         legend.title = element_blank()) 
 plot.regime_stack
-
-
+#ggsave(plot = plot.regime_stack, paste0(path,"/outp/plot_stack.regime.tiff"), width=10, height=6) 
 
 # --------------------
 # Plot regime grouped for some classes 
@@ -117,11 +117,11 @@ plot.regime_class <- regime_class_prc %>%
   ylab("share of regime class [%]") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
         axis.title.x=element_blank(),
-        legend.title = element_blank()) 
+        legend.title = element_blank())
 plot.regime_class
 
-# now we can also save it
-#ggsave(plot = plot.regime_class, paste0(path,"/outp/plot.regime_class.tiff"), width=4, height=4)
+#ggsave(plot = plot.regime_class, paste0(path,"/outp/plot.regime_class.tiff"), width=10, height=6)  
+
 
 # The current color schemes are bit strong... but there are also other colour schemes.
 # If you google for "ggplot adjust color" you can find for example ways how to adapt it; 
@@ -214,6 +214,4 @@ plot.regime_class_all_scenario <- regime_class_prc %>%
         axis.title.x=element_blank(),
         legend.title = element_blank()) 
 plot.regime_class_all_scenario
-
-# save the plot
-#ggsave(plot = plot.regime_class_all_scenario, paste0(path,"/outp/plot.regime_class_all_scenario.tiff"), width=4, height=4)
+#ggsave(plot = plot.regime_class_all_scenario, paste0(path,"/outp/plot.regime_class_all_scenario.tiff"), width=10, height=6)

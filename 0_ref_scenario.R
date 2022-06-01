@@ -59,6 +59,19 @@ for(i in rcplist){
   
   
   # -----------
+  # reference scenario for Set Aside
+  # -----------
+  
+  df.refsa <- df %>%  filter(regime %in% "SA") %>% 
+    mutate(policy = "refSA") %>% 
+    mutate(scenario = i) # data has already info about climate --> column scenario
+  
+  length(unique(df.refsa$id)) # should be 3579 
+  # both data sets should have the same lenght (see right hand side - global env.)
+  
+  ########################################################################################
+  
+  # -----------
   # reference scenario representing business as usual
   # -----------
   
@@ -94,16 +107,6 @@ for(i in rcplist){
   
   length(unique(df.refbau$id)) # should be 3579
   
-  # -----------
-  # reference scenario for Set Aside
-  # -----------
-  
-  df.refsa <- df %>%  filter(regime %in% "SA") %>% 
-    mutate(policy = "refSA") %>% 
-    mutate(scenario = i) # data has already info about climate --> column scenario
-  
-  length(unique(df.refsa$id)) # should be 3579 
-  # both data sets should have the same lenght (see right hand side - global env.)
   
   
   
@@ -161,9 +164,13 @@ head(df.refall)
 names(df.refall)
 
 
+# transfer SA reference scenario to df.solution_alldata
+
+df.refSA <- filter(df.refall, policy == "refSA")
 
 
 
+######################################################################################################################
 
 
 # -----------

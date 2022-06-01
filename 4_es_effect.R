@@ -17,25 +17,27 @@ library(tidyr)
 # Bioenergy (biomass)
 #
 
-# First aggregate data to see landscape values instead of stand-level values
-
 df.biomass <- df.solution_alldata
 
 df.biomass <- df.biomass %>% 
-  mutate(tot_biomass = solution_area_share * Biomass) %>% 
+  # mutate(tot_biomass = solution_area_share * Biomass) %>% 
   group_by(year, scenario, policy) %>% 
-  summarise(sum_tot_biomass = sum(tot_biomass)) %>% 
+  # summarise(sum_tot_biomass = sum(tot_biomass)) %>% 
+  summarise(mean_biomass = mean(Biomass))
   arrange(scenario, year)
 
-# Plot of aggregated values
+# Plot of mean values
 plot_biomass_harvest <- df.biomass %>%
-  ggplot(aes(x=year, y=sum_tot_biomass, group=scenario))+
-  geom_line(aes(linetype = scenario))+
-  labs(title="Volume of biomass harvests",x="Year", y = "m3")+
+  ggplot(aes(x=year, y=mean_biomass, group=scenario))+
+  geom_line(aes(color = policy, linetype = scenario))+
+  labs(title="Volume of biomass harvests per hectare",x="Year")+
+  ylab(expression(m^{3}~ha^{-1}~year^{-1})) +
+  scale_x_continuous(breaks = seq(from = 2021, to = 2116, by= 10))+    
   theme(axis.text.x = element_text(angle = 90))+
   facet_grid(. ~ policy)
-
 plot_biomass_harvest
+
+#ggsave(plot = plot_biomass_harvest, paste0(path,"/outp/plot_biomass_harvest.tiff"), width=10, height=6)
 
 
 
@@ -46,40 +48,43 @@ plot_biomass_harvest
 df.bd <- df.solution_alldata
 
 # Deadwood 
-# Same aggregation as before, total amount of deadwood in the landscape
 df.bd <- df.bd %>% 
-  mutate(tot_deadwood = solution_area_share * V_deadwood) %>% 
   group_by(year, scenario, policy) %>% 
-  summarise(sum_tot_deadwood = sum(tot_deadwood)) %>% 
+  summarise(mean_deadwood = mean(V_deadwood)) %>% 
   arrange(scenario, year)
 
 plot_deadwood <- df.bd %>%
-  ggplot(aes(x=year, y=sum_tot_deadwood, group=scenario))+
-  geom_line(aes(color = scenario))+
-  labs(title="Volume of deadwood",x="Year", y = "m3")+
+  ggplot(aes(x=year, y=mean_deadwood, group=scenario))+
+  geom_line(aes(color = policy, linetype = scenario))+
+  labs(title="Volume of deadwood per hectare",x="Year")+
+  ylab(expression(m^{3}~ha^{-1}~year^{-1})) +
+  scale_x_continuous(breaks = seq(from = 2021, to = 2116, by= 10))+    
   theme(axis.text.x = element_text(angle = 90))+
   facet_grid(. ~ policy)
 plot_deadwood
 
-# It does not make sense to me to take the sum of the % of decidous trees at the landscape level as with previous variables
-# I was thinking that the average % over the whole landscape for one year would be more suitable
-# How would I begin doing this?
+#ggsave(plot = plot_deadwood, paste0(path,"/outp/plot_deadwood.tiff"), width=10, height=6)
+
 
 # Decidous tree % 
-# Take average value for the whole area for each year
-#df.bd <- df.bd %>% 
-#  mutate(tot_deadwood = solution_area_share * V_deadwood) %>% 
-#  group_by(year, scenario, policy) %>% 
-#  summarise(sum_tot_deadwood = sum(tot_deadwood)) %>% 
-#  arrange(scenario, year)
 
-#plot_decidous_trees <- df.solution_alldata %>%
-#  ggplot(aes(x=year, y=prc_V_deciduous, group=scenario))+
-#  geom_line(aes(color = scenario))+
-#  labs(title="% volume of decidous trees",x="Year", y = "%")+
-#  theme(axis.text.x = element_text(angle = 90))+
-#  facet_grid(. ~ policy)
-#plot_decidous_trees
+df.bd <- df.solution_alldata
+df.bd <- df.bd %>% 
+  group_by(year, scenario, policy) %>% 
+  summarise(mean_decidous = mean(prc_V_deciduous)) %>% 
+  arrange(scenario, year)
+
+plot_decidous_trees <- df.bd %>%
+  ggplot(aes(x=year, y=mean_decidous, group=scenario))+
+  geom_line(aes(color = policy, linetype = scenario))+
+  labs(title="Mean % of decidous trees per hectare",x="Year")+
+  ylab(expression("%"~ha^{-1}~year^{-1})) +
+  scale_x_continuous(breaks = seq(from = 2021, to = 2116, by= 10))+    
+  theme(axis.text.x = element_text(angle = 90))+
+  facet_grid(. ~ policy)
+plot_decidous_trees
+
+#ggsave(plot = plot_decidous_trees, paste0(path,"/outp/plot_decidous_trees.tiff"), width=10, height=6)
 
 
 
@@ -89,34 +94,26 @@ plot_deadwood
 
 df.nwp <- df.solution_alldata
 
-# Total amounts harvested 
 df.nwp <- df.nwp %>%
-  mutate(tot_mushrooms = solution_area_share * ALL_MARKETED_MUSHROOMS) %>%
-  mutate(tot_bilberry = solution_area_share * BILBERRY) %>%
-  mutate(tot_cowberry = solution_area_share * COWBERRY) %>%
   group_by(year, scenario, policy) %>%
-  summarise(sum_tot_mushrooms = sum(tot_mushrooms),
-            sum_tot_bilberry = sum(tot_bilberry), 
-            sum_tot_cowberry = sum(tot_cowberry)) %>% 
+  summarise(mean_mushrooms = mean(ALL_MARKETED_MUSHROOMS),
+            mean_bilberry = mean(BILBERRY), 
+            mean_cowberry = mean(COWBERRY)) %>% 
   arrange(scenario, year)
 
-# Plot total amounts
 plot_nwp <- df.nwp %>%
   ggplot(aes(x=year, group=scenario))+
-  geom_line(aes(y = sum_tot_mushrooms, linetype = scenario, color = 'Mushrooms'))+
-  geom_line(aes(y = sum_tot_bilberry, linetype = scenario, color = 'Bilberry'))+
-  geom_line(aes(y = sum_tot_cowberry, linetype = scenario, color = 'Cowberry'))+
-  labs(title="Harvested non wood products",x="Year", y = "kg")+
+  geom_line(aes(y = mean_mushrooms, linetype = scenario, color = 'Mushrooms'))+
+  geom_line(aes(y = mean_bilberry, linetype = scenario, color = 'Bilberry'))+
+  geom_line(aes(y = mean_cowberry, linetype = scenario, color = 'Cowberry'))+
+  labs(title="Harvested non wood products",x="Year")+
+  ylab(expression(kg^{-1}~ha^{-1}~year^{-1})) +
+  scale_x_continuous(breaks = seq(from = 2021, to = 2116, by= 10))+    
   theme(axis.text.x = element_text(angle = 90))+
   facet_grid(. ~ policy)
-
 plot_nwp
 
-
-
-#
-# I was not able to test the next two (recreation and carbon) because I have the wrong data and cannot access WinSCP... However the following should produce the types of graphs I want when I have the correct data
-#
+#ggsave(plot = plot_nwp, paste0(path,"/outp/plot_nwp.tiff"), width=10, height=6)
 
 
 
@@ -126,60 +123,100 @@ plot_nwp
 
 df.rec <- df.solution_alldata
 
-# Sum total of recreation & scenic indices
 df.rec <- df.rec %>% 
-  mutate(tot_rec = solution_area_share * Recreation) %>% 
-  mutate(tot_sce = solution_area_share * Scenic) %>%
   group_by(year, scenario, policy) %>% 
-  summarise(sum_tot_rec = sum(tot_rec)) %>% 
-  summarise(sum_tot_sce = sum(tot_sce)) %>%
+  summarise(mean_rec = mean(Recreation),
+            mean_sce = mean(Scenic)) %>% 
   arrange(scenario, year)
-
-# Plot of aggregated values
 
 plot_recreation <- df.rec %>%
   ggplot(aes(x=year, group=scenario))+
-  geom_line(aes(y = sum_tot_rec, linetype = scenario, color = 'Recreation index'))+
-  geom_line(aes(y = sum_tot_sce, linetype = scenario, color = 'Scenic index'))+
+  geom_line(aes(y = mean_rec, linetype = scenario, color = 'Recreation index'))+
+  geom_line(aes(y = mean_sce, linetype = scenario, color = 'Scenic index'))+
   labs(title="Total Recreation & Scenic index ",x="Year", y = "Aggregated index")+
   theme(axis.text.x = element_text(angle = 90))+
   facet_grid(. ~ policy)
 
 plot_recreation
-
+#ggsave(plot = plot_recreation, paste0(path,"/outp/plot_recreation.tiff"), width=10, height=6)
 
 
 #
 # Climate regulation (carbon sink)
 #
 
+
+# Aggregated values at landscape level
+
 df.carbon <- df.solution_alldata
 
-# Aggregate at landscape level
 df.carbon <- df.carbon %>% 
   mutate(tot_C_sink = solution_area_share * CARBON_SINK) %>% 
   mutate(tot_C_stored = solution_area_share * CARBON_STORAGE_Update) %>%
   group_by(year, scenario, policy) %>% 
-  summarise(sum_tot_C_sink = sum(tot_C_sink)) %>% 
-  summarise(sum_tot_C_storage = sum(tot_C_stored)) %>% 
+  summarise(sum_tot_C_sink = sum(tot_C_sink), 
+            sum_tot_C_storage = sum(tot_C_stored)) %>% 
   arrange(scenario, year)
 
 # Plot of aggregated values
-plot_carbon <- df.carbon %>%
+plot_carbon_sink <- df.carbon %>%
   ggplot(aes(x=year, group=scenario))+
-  geom_line(aes(y = sum_tot_C_sink, linetype = scenario, color = 'Carbon Sink'))+
-  geom_line(aes(y = sum_tot_C_sink, linetype = scenario, color = 'Total carbon stored'))+
-  labs(title="Carbon sink & storage ",x="Year", y = "kg")+
+  geom_line(aes(y = sum_tot_C_sink, linetype = scenario))+
+  labs(title="Carbon sink ",x="Year", y = "kg")+
   theme(axis.text.x = element_text(angle = 90))+
   facet_grid(. ~ policy)
+plot_carbon_sink
+#ggsave(plot = plot_carbon_sink, paste0(path,"/outp/plot_carbon_sink.tiff"), width=10, height=6)
 
-plot_carbon
+
+plot_carbon_storage <- df.carbon %>%
+  ggplot(aes(x=year, group=scenario))+
+  geom_line(aes(y = sum_tot_C_storage, linetype = scenario))+
+  labs(title="Carbon storage ",x="Year", y = "kg")+
+  theme(axis.text.x = element_text(angle = 90))+
+  facet_grid(. ~ policy)
+plot_carbon_storage
+#ggsave(plot = plot_carbon_storage, paste0(path,"/outp/plot_carbon_storage.tiff"), width=10, height=6)
 
 
+# Mean values per ha
+
+df.carbon <- df.solution_alldata
+
+df.carbon <- df.carbon %>% 
+  group_by(year, scenario, policy) %>% 
+  summarise(mean_C_sink = mean(CARBON_SINK), 
+            mean_C_storage = mean(CARBON_STORAGE_Update)) %>% 
+  arrange(scenario, year)
+
+plot_mean_carbon_storage <- df.carbon %>%
+  ggplot(aes(x=year, group=scenario))+
+  geom_line(aes(y = mean_C_storage, color = policy, linetype = scenario))+
+  labs(title="Carbon storage per hectare ",x="Year")+
+  ylab(expression(kg^{-1}~ha^{-1}~year^{-1})) +
+  scale_x_continuous(breaks = seq(from = 2021, to = 2116, by= 10))+    
+  theme(axis.text.x = element_text(angle = 90))+
+  facet_grid(. ~ policy)
+plot_mean_carbon_storage
+#ggsave(plot = plot_mean_carbon_storage, paste0(path,"/outp/plot_mean_carbon_storage.tiff"), width=10, height=6)
+
+
+plot_mean_carbon_sink <- df.carbon %>%
+  ggplot(aes(x=year, group=scenario))+
+  geom_line(aes(y = mean_C_sink, linetype = scenario))+
+  labs(title="Mean carbon sink ",x="Year", y = "kg per ha")+
+  theme(axis.text.x = element_text(angle = 90))+
+  facet_grid(. ~ policy)
+plot_mean_carbon_sink
+#ggsave(plot = plot_mean_carbon_sink, paste0(path,"/outp/plot_mean_carbon_sink.tiff"), width=10, height=6)
+
+
+
+#################################################################################################################
+#################################################################################################################
+  
 #
 # Collect all ES graphs into one image
 #
-
-
 
 
