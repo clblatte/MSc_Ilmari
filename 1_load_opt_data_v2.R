@@ -180,7 +180,7 @@ df.solution <- df.solution %>%  select(-NoStands)
 # --------------------
 
 df.solution_alldata <- df.solution_alldata %>% select(-Old_forests) %>% 
-  rbind(df.refallcol)
+  rbind(df.refall)
 
 df.solution <- df.solution %>% rbind(df.refallsolution)
 

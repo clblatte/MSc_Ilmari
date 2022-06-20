@@ -110,7 +110,7 @@ regime_class_prc <- df.solution %>%
 
 # plot the regime class - on top
 plot.regime_class <- regime_class_prc %>% 
-  ggplot(aes(x=scenario, y=prc_share) ) +
+  ggplot(aes(x=scenario, y=prc_share, col=regime_class) ) +
   geom_bar(aes(fill=regime_class), position="stack", stat="identity" ) +
   theme_minimal() +
   facet_grid(. ~ policy) +
@@ -209,9 +209,10 @@ plot.regime_class_all_scenario <- regime_class_prc %>%
   geom_bar(aes(fill=regime_class), position="stack", stat="identity" ) +
   theme_minimal() +
   facet_grid(. ~ policy) +
-  ylab("share of regime class [%]") +
+  ylab("Share of regime class [%]") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
         axis.title.x=element_blank(),
-        legend.title = element_blank()) 
+        legend.title = element_blank())
+  
 plot.regime_class_all_scenario
 #ggsave(plot = plot.regime_class_all_scenario, paste0(path,"/outp/plot.regime_class_all_scenario.tiff"), width=10, height=6)

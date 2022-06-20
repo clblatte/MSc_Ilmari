@@ -133,7 +133,8 @@ plot_recreation <- df.rec %>%
   ggplot(aes(x=year, group=scenario))+
   geom_line(aes(y = mean_rec, linetype = scenario, color = 'Recreation index'))+
   geom_line(aes(y = mean_sce, linetype = scenario, color = 'Scenic index'))+
-  labs(title="Total Recreation & Scenic index ",x="Year", y = "Aggregated index")+
+  labs(title="Total Recreation & Scenic index ",x="Year")+
+  ylab(expression(Indices~ha^{-1}))+
   theme(axis.text.x = element_text(angle = 90))+
   facet_grid(. ~ policy)
 
