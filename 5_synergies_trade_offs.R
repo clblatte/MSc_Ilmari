@@ -61,7 +61,8 @@ FctAreaWeightedAverage <- function(data, indicators){
 # Use function to calculate area weighted averages for selected ecosystem services
 df.es <- FctAreaWeightedAverage(df.solution_alldata, all_of(indicators)) %>% 
   # from wide to long format
-  gather("indicator","areaWeightedAverage", 5:14)
+  gather("indicator","areaWeightedAverage", 5:13)
+
 
 
 # ----------
@@ -79,6 +80,25 @@ df.norm <- df.es %>%
 
 # Normalization analysis - graph each ecosystem service in conjunction with each other
 
-plot_norm <- df.norm %>%
-  ggplot(aes(x=year, y=norm))
+# filter for 3 time steps
+df.norm <- df.norm %>%
+  filter(year %in% c("2021", "2056", "2116"))
 
+# Stuck here
+#
+# This results in a dataframe with many rows of NA and I was unable to combine the rows into a format that could be used in the next step to make the graphs
+df.norm2021 <- df.norm %>%
+  filter(year %in% c("2021"))%>%
+  spread(indicator, norm)
+
+# Next I'll make spider charts for each regime at each of the three time steps. This would result in three sets of graphs (one for each time step), containing a spider chart for each regime (two climate scenarios in each graph) with all indicators in every graph.
+
+# I was using instructions from the link above
+# https://www.datanovia.com/en/blog/beautiful-radar-chart-in-r-using-fmsb-and-ggplot-packages/
+# install.packages("fmsb")
+
+
+library(fmsb)
+
+  
+  

@@ -13,7 +13,7 @@ library(tidyr)
 
 
 
-df.harvest <- select(df.solution_alldata, -c(Old_forests, regime_6class, regime_class))
+df.harvest <- select(df.solution_alldata, -c(regime_6class, regime_class))
 
 
 # To have a line plot over time we need to aggregate our data first a bit, coming form stand values over time to landscape values (total values) over time, see example below for solution_alldata
@@ -116,6 +116,11 @@ head(df.pulp_log)
 # with new column specifying the assortment and its value
 df.pulp_log<- df.pulp_log %>% 
   tidyr::gather(assortment, value, 4:5) 
+
+
+#
+# Stuck here, not able to make the bar chart. If this is for the timely mean, is it for a single time step? The plot from row 138 onwards has year as the x axis although this does not exist in df.pulp_log. Should it be assortment instead? I tried this as well and was not able to make it work.
+#
 
 # CB: to have an more easier comparison, we could also look only at the timely mean values and 
 head(df.pulp_log)
