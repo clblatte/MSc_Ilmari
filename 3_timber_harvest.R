@@ -136,7 +136,7 @@ df.pulp_log<-df.pulp_log %>%
 head(df.pulp_log )
 
 plot.timely_mean <- df.pulp_log %>%
-  ggplot(aes(x = year, y = timely_mean)) +
+  ggplot(aes(x = assortment, y = timely_mean)) +
   geom_bar(position = "dodge") +
   facet_wrap(.~ policy) 
 

@@ -89,6 +89,7 @@ df.norm <- df.norm %>%
 # This results in a dataframe with many rows of NA and I was unable to combine the rows into a format that could be used in the next step to make the graphs
 df.norm2021 <- df.norm %>%
   filter(year %in% c("2021"))%>%
+  select(-Harvested_V, -areaWeightedAverage)%>%
   spread(indicator, norm)
 
 # Next I'll make spider charts for each regime at each of the three time steps. This would result in three sets of graphs (one for each time step), containing a spider chart for each regime (two climate scenarios in each graph) with all indicators in every graph.
