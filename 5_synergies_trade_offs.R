@@ -19,23 +19,19 @@ library(tidyr)
 
 
 # specify the indicator columns, except the ones addressing regime shares
-indicators <- c("Harvested_V", "Biomass", "V_deadwood", "prc_V_deciduous", "ALL_MARKETED_MUSHROOMS", "BILBERRY", "COWBERRY", "Recreation", "Scenic", "CARBON_STORAGE_Update")
+indicator_col <- c("Harvested_V", "Biomass", "V_deadwood", "prc_V_deciduous", "ALL_MARKETED_MUSHROOMS", "BILBERRY", "COWBERRY", "Recreation", "Scenic", "CARBON_STORAGE_Update")
 
 
-# Restructure the data - put it in a fuction since it needs to be done twice
-FctAreaWeightedAverage <- function(data, indicators){
-  
-  # to test the part within the function
-  # data = df.solution_alldata
-  
-  df.es <- data %>% 
+## CB: I removed the function... since it is here actually not needed - area weighted averages only calculated once
+
+df.es <- df.solution_alldata %>% 
     # select only columns that are needed
     # basic columns
     select(id, year, regime, policy, scenario, 
            # area 
            represented_area_by_NFIplot, stand_share,
            # columns for indicators
-           indicators) %>% 
+           indicator_col) %>% 
     
     
     # multiply the represented forest area with stand share assigned to an optimal regime
@@ -47,22 +43,33 @@ FctAreaWeightedAverage <- function(data, indicators){
     ungroup() %>% 
     
     # multiply indicators by area factor to get "area weighted indicator"
-    mutate_at(indicators, ~ .* (represented_area_stand_share/tot_area) ) %>%
+    mutate_at(indicator_col, ~ .* (represented_area_stand_share/tot_area) ) %>%
     
     # calculate sum over the country to get "area weighted averages per year"
     group_by(policy, scenario, year) %>%
-    summarise_at(indicators, sum) 
+    summarise_at(indicator_col, sum) %>% 
+    ungroup() %>% 
+    as.data.frame()
   
-  return(df.es)
   
-}
+ 
 
 
 # Use function to calculate area weighted averages for selected ecosystem services
-df.es <- FctAreaWeightedAverage(df.solution_alldata, all_of(indicators)) %>% 
-  # from wide to long format
-  gather("indicator","areaWeightedAverage", 5:13)
 
+## CB: you identified the wrong columns that need to gathered from wide to long (5:13); I changed it a bit that you see what I mean
+
+# df.es <- FctAreaWeightedAverage(df.solution_alldata, all_of(indicators)) %>% 
+#   # from wide to long format
+#   gather("indicator","areaWeightedAverage", 5:13)
+
+head(df.es)
+df.es <- df.es %>% 
+# after applying the function, and looking at the df, we see that indicators are in column 4:10, this needs to replace the values 5:13, 
+# This was coming from my earlier example I guess
+  tidyr::gather("indicator","areaWeightedAverage", 4:13)
+# now we can look at it again
+head(df.es)
 
 
 # ----------
@@ -70,13 +77,20 @@ df.es <- FctAreaWeightedAverage(df.solution_alldata, all_of(indicators)) %>%
 # ----------
 
 # Normalize function - normalized values for ecosystem services
-normalizeFct <- function(x) {(x - min(x))/(max(x)/min(x))}
+
+## CB. THIS WAS THE WRONG FUNCTION !!! That is the reason why it was not giving correct values
+# normalizeFct <- function(x) {(x - min(x))/(max(x)/min(x))} 
+normalizeFct <- function(x) {(x - min(x))/(max(x) - min(x))} # minus instead divide !!
 
 # New dataframe for analysis - use function to get normalized values
 df.norm <- df.es %>%
   group_by(indicator) %>%
   mutate(norm = normalizeFct(areaWeightedAverage)) %>%
   ungroup()
+
+summary(df.norm$norm)
+
+
 
 # Normalization analysis - graph each ecosystem service in conjunction with each other
 

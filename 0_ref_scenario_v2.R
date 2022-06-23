@@ -87,6 +87,10 @@ names(df.refall)
 
 # reference scenario over time which will be combined with df.solution_alldata
 
+# Info to group the regimes according to 6 management classes as in Blattert et al. 2022 
+regimeclass <- read.csv(paste0(path, "/params/regimeclass.txt"), sep = ";"  ,header = TRUE, stringsAsFactors = TRUE)
+
+
 df.refall <- df.refall %>% 
   # merge the regime classes
   left_join(regimeclass, by = "regime") %>% 
